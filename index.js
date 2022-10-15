@@ -6,10 +6,10 @@ const cohere = require("cohere-ai");
 const port = process.env.PORT || 8080;
 const app = express();
 
-// cohere.init(apiKey);
-
 app.use(cors());
 app.use(express.json());
+
+// cohere.init(apiKey);
 
 // app.get("/", async (req, res) => {
 //   const response = await cohere.generate({
@@ -53,12 +53,14 @@ fs.readFile(file, (err, data) => {
     assembly
       .post("/transcript", {
         audio_url: res.data.upload_url,
+        auto_highlights: true,
       })
       .then((res) => {
         console.log(res.data);
         audioID = res.data.id;
 
         const getData = () => {
+          console.log("data processing");
           assembly.get(`/transcript/${audioID}`).then((res) => {
             if (res.data.status === "completed") {
               clearInterval(interval);
