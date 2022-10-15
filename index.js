@@ -5,6 +5,7 @@ const apiKey = process.env.COHERE_API_KEY;
 const cohere = require("cohere-ai");
 const port = process.env.PORT || 8080;
 const app = express();
+app.use(express.json());
 
 app.use(cors());
 app.use(express.json());
@@ -35,6 +36,7 @@ app.use(express.json());
 
 const axios = require("axios");
 const fs = require("fs");
+const { get } = require("http");
 const assembly = axios.create({
   baseURL: "https://api.assemblyai.com/v2",
   headers: {
@@ -44,33 +46,42 @@ const assembly = axios.create({
   },
 });
 const file = "data/Upload/SampleAudio.mp4";
-let uploadStatus;
+
 let audioID;
-fs.readFile(file, (err, data) => {
-  if (err) return console.error(err);
 
-  assembly.post("/upload", data).then((res) => {
-    assembly
-      .post("/transcript", {
-        audio_url: res.data.upload_url,
-        auto_highlights: true,
-      })
-      .then((res) => {
-        console.log(res.data);
-        audioID = res.data.id;
+app.get("/", (req, response) => {
+  fs.readFile(file, (err, data) => {
+    if (err) return console.error(err);
+    console.log("audio file uploading...");
+    assembly.post("/upload", data).then((res) => {
+      assembly
+        .post("/transcript", {
+          audio_url: res.data.upload_url,
+          auto_highlights: true,
+          entity_detection: true,
+        })
+        .then((res) => {
+          console.log(res.data);
+          audioID = res.data.id;
 
-        const getData = () => {
-          console.log("data processing");
-          assembly.get(`/transcript/${audioID}`).then((res) => {
-            if (res.data.status === "completed") {
-              clearInterval(interval);
-              console.log(res.data);
-              return res.data;
-            }
-          });
-        };
-        const interval = setInterval(getData, 1000);
-      })
-      .catch((err) => console.error(err));
+          const getData = () => {
+            console.log("data processing");
+            assembly.get(`/transcript/${audioID}`).then((res) => {
+              if (res.data.status === "completed") {
+                clearInterval(interval);
+                console.log(res.data);
+                response.send({ data: res.data });
+                return res.data;
+              }
+            });
+          };
+          const interval = setInterval(getData, 1000);
+        })
+        .catch((err) => console.error(err));
+    });
   });
+});
+
+app.listen(port, () => {
+  console.log(`Server started on port ${port}`);
 });
