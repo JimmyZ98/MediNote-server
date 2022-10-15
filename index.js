@@ -50,7 +50,6 @@ fs.readFile(file, (err, data) => {
   if (err) return console.error(err);
 
   assembly.post("/upload", data).then((res) => {
-    console.log(res.data.upload_url);
     assembly
       .post("/transcript", {
         audio_url: res.data.upload_url,
@@ -58,18 +57,18 @@ fs.readFile(file, (err, data) => {
       .then((res) => {
         console.log(res.data);
         audioID = res.data.id;
-        setTimeout(() => {
+
+        const getData = () => {
           assembly.get(`/transcript/${audioID}`).then((res) => {
-            console.log(res.data);
+            if (res.data.status === "completed") {
+              clearInterval(interval);
+              console.log(res.data);
+              return res.data;
+            }
           });
-        }, 30000);
-      });
+        };
+        const interval = setInterval(getData, 1000);
+      })
+      .catch((err) => console.error(err));
   });
 });
-
-// assembly
-//   .get("/transcript/rkwzz4ytmz-b545-47c0-9993-616629606688")
-//   .then((res) => {
-//     console.log("waiting for processing");
-//     console.log(res.data);
-//   });
