@@ -44,19 +44,32 @@ const assembly = axios.create({
   },
 });
 const file = "data/Upload/SampleAudio.mp4";
+let uploadStatus;
+let audioID;
 fs.readFile(file, (err, data) => {
   if (err) return console.error(err);
 
-  // assembly
-  //   .post("/upload", data)
-  //   .then((res) => console.log(res.data))
-  //   .catch((err) => console.error(err));
-
-  assembly
-    .post("/transcript", {
-      audio_url:
-        "https://cdn.assemblyai.com/upload/c3ad4b08-6cfd-4601-a497-def7819b63dd",
-    })
-    .then((res) => console.log(res.data))
-    .catch((err) => console.error(err));
+  assembly.post("/upload", data).then((res) => {
+    console.log(res.data.upload_url);
+    assembly
+      .post("/transcript", {
+        audio_url: res.data.upload_url,
+      })
+      .then((res) => {
+        console.log(res.data);
+        audioID = res.data.id;
+        setTimeout(() => {
+          assembly.get(`/transcript/${audioID}`).then((res) => {
+            console.log(res.data);
+          });
+        }, 30000);
+      });
+  });
 });
+
+// assembly
+//   .get("/transcript/rkwzz4ytmz-b545-47c0-9993-616629606688")
+//   .then((res) => {
+//     console.log("waiting for processing");
+//     console.log(res.data);
+//   });
