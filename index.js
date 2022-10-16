@@ -7,6 +7,7 @@ const port = process.env.PORT || 8080;
 const app = express();
 app.use(express.json());
 
+
 app.use(cors());
 app.use(express.json());
 
@@ -15,24 +16,20 @@ app.use(express.json());
 // app.get("/", async (req, res) => {
 //   const response = await cohere.generate({
 //     model: "large",
-//     prompt:
-//       "This is a spell check generator that capitalizes samples of text.\n\nSample: a new type OF aurora FounD on saturn resolves a planetary mystery\nCapitalized Text: A New Type Of Aurora Found On Saturn Resolves A Planetary Mystery\n--\nSample: online Shopping is ReSHaping Real-world Cities\nTitle Case: Online Shopping Is Reshaping Real-World Cities\n--\nSample: When you close 100 TAbs AFter Finding THE SoluTion To A BuG\nTitle Case: When You Close 100 Tabs After Finding The Solution To A Bug\n--\nSample: mastering DYNAmIC ProGrammING\nTitle Case:",
-//     max_tokens: 50,
+//     prompt: 'Given a medical note, please return the disease diagnosis, symptoms, patient, date, condition, prescription of the patient\n\nMedical Note: \nSo we have Kevin Lin, our patient. Admitted on July 6th, 2021, Not yet discharged. Date of birth is November 12th, 1998 and sex is male. Treatment is right hemi. Symptoms are slight nausea and coughs. Observations are stable. Patient looks generally well or confused. Plan for patient is to repeat U&E, and replace K+ if less than 4, uh - Continue Physio, Leave Catheter, Remove drain, and er- Oral Fluids only for now\n\nTreatment: right hemi\nSymptom: nausea and cough\nPatient: Kevin Lin\nDate: July 6th\nCondition: stable\nPrescription: repeat U&E, and replace K+ if less than 4, uh - Continue Physio, Leave Catheter, Remove drain, and er- Oral Fluids only for now\n\n--\nMedical Note: \nOur Patient is Lydia Shan, Admitted on July 10th, 2021, and discharged on July 7th, 2022. Date of birth is November 11th, 1999 and sex is female. Treatment is not understood. Symtoms are sickness and cold. Observations are unstable. Patient is febrile at uh 1750, mom said she wasn’t taking fluids PO, IV meds at 1800 uh- skipped due to intolerance. Plan for patient is to take meds with applesauce. \n\n', 
+//     max_tokens: 200,
 //     temperature: 0.3,
 //     k: 0,
-//     p: 0.75,
+//     p: 1,
 //     frequency_penalty: 0,
 //     presence_penalty: 0,
 //     stop_sequences: ["--"],
 //     return_likelihoods: "NONE",
 //   });
-//   console.log(`Prediction: ${response.body.generations[0].text}`);
-//   res.send("works");
+//   console.log(${response.body.generations[0].text});
+//   res.send("generated")
 // });
 
-// app.listen(port, () => {
-//   console.log(`Server started on port ${port}`);
-// });
 
 const axios = require("axios");
 const fs = require("fs");
